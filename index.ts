@@ -9,9 +9,8 @@ function handlePreFlightRequest(): Response {
 }
 
 async function handler(_req: Request): Promise<Response> {
-  // Gérer correctement les requêtes préliminaires CORS (OPTIONS)
-  if (_req.method === "OPTIONS") {
-    return handlePreFlightRequest();
+  if (_req.method == "OPTIONS") {
+    handlePreFlightRequest();
   }
 
   const headers = new Headers();
@@ -30,38 +29,34 @@ async function handler(_req: Request): Promise<Response> {
   };
 
   try {
-    // Vérifiez si l'URL de l'API Vercel nécessite un chemin spécifique (ex: /api/similarity)
     const response = await fetch("https://word2vec-ten.vercel.app", requestOptions);
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Erreur Vercel (${response.status}) :`, errorText);
-      return new Response(JSON.stringify({ error: `API Distante Erreur: ${response.status}`, details: errorText }), {
-        status: 502,
+      console.error(`Error: ${response.statusText}`);
+      return new Response(`Error: ${response.statusText}`, {
+        status: 200,
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "content-type",
         },
       });
     }
 
     const result = await response.json();
+
+    console.log(result);
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "content-type",
       },
     });
   } catch (error) {
-    console.error("Erreur interne Deno:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    console.error("Fetch error:", error);
+    return new Response(`Error: ${error.message}`, { status: 500 });
   }
 }
 
