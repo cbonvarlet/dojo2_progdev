@@ -29,7 +29,7 @@ async function handler(_req: Request): Promise<Response> {
   };
 
   try {
-    const response = await fetch("https://word2vec-ten.vercel.app", requestOptions);
+    const response = await fetch("https://word2vec-ten.vercel.app/similarity", requestOptions);
 
     if (!response.ok) {
       console.error(`Error: ${response.statusText}`);
